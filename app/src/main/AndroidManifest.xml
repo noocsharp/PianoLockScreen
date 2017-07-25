@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.thedroidboy.lockscreendemo">
+          package="com.noocsharp.pianolockscreen">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -12,17 +12,18 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity">
+            android:name="com.noocsharp.pianolockscreen.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".PianoPreferencesActivity" />
 
-        <service android:name=".LockScreenService"/>
+        <service android:name="com.noocsharp.pianolockscreen.LockScreenService"/>
 
-        <receiver android:name=".BootReceiver">
+        <receiver android:name="com.noocsharp.pianolockscreen.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>

@@ -1,22 +1,23 @@
-package com.thedroidboy.lockscreendemo;
+package com.noocsharp.pianolockscreen;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.IBinder;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,8 @@ public class LockScreenService extends Service /*implements View.OnClickListener
     private SoundPool soundPool;
     private HashMap<Integer, Integer> soundMap;
 
+    private SharedPreferences sp;
+
     private final int PIANO1  = 1;
     private final int PIANO2  = 2;
     private final int PIANO3  = 3;
@@ -66,6 +69,7 @@ public class LockScreenService extends Service /*implements View.OnClickListener
 
     @Override
     public void onCreate() {
+        Log.i(TAG, "LockScreenService.onCreate");
         super.onCreate();
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         registerReceiver(screenReceiver, intentFilter);
@@ -81,7 +85,71 @@ public class LockScreenService extends Service /*implements View.OnClickListener
 
         soundPool = new SoundPool(12, AudioManager.STREAM_MUSIC, 100);
         soundMap = new HashMap<>();
-        soundMap.put(PIANO1, soundPool.load(this));
+        soundMap.put(PIANO1,  soundPool.load(this, R.raw.c4, 1));
+        soundMap.put(PIANO2,  soundPool.load(this, R.raw.db4, 1));
+        soundMap.put(PIANO3,  soundPool.load(this, R.raw.d4, 1));
+        soundMap.put(PIANO4,  soundPool.load(this, R.raw.eb4, 1));
+        soundMap.put(PIANO5,  soundPool.load(this, R.raw.e4, 1));
+        soundMap.put(PIANO6,  soundPool.load(this, R.raw.f4, 1));
+        soundMap.put(PIANO7,  soundPool.load(this, R.raw.gb4, 1));
+        soundMap.put(PIANO8,  soundPool.load(this, R.raw.g4, 1));
+        soundMap.put(PIANO9,  soundPool.load(this, R.raw.ab4, 1));
+        soundMap.put(PIANO10, soundPool.load(this, R.raw.a4, 1));
+        soundMap.put(PIANO11, soundPool.load(this, R.raw.bb4, 1));
+        soundMap.put(PIANO12, soundPool.load(this, R.raw.b4, 1));
+
+        sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    }
+
+    private void playSound(int sound, float fSpeed) {
+        AudioManager mgr = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volume = streamVolumeCurrent / streamVolumeMax;
+
+
+        soundPool.play(soundMap.get(sound), volume, volume, 1, 0, fSpeed);
+    }
+
+    private void playSoundFromKeycode(int keycode) {
+        switch (keycode) {
+            case 1:
+                playSound(PIANO1, 1.0f);
+                break;
+            case 2:
+                playSound(PIANO2, 1.0f);
+                break;
+            case 3:
+                playSound(PIANO3, 1.0f);
+                break;
+            case 4:
+                playSound(PIANO4, 1.0f);
+                break;
+            case 5:
+                playSound(PIANO5, 1.0f);
+                break;
+            case 6:
+                playSound(PIANO6, 1.0f);
+                break;
+            case 7:
+                playSound(PIANO7, 1.0f);
+                break;
+            case 8:
+                playSound(PIANO8, 1.0f);
+                break;
+            case 9:
+                playSound(PIANO9, 1.0f);
+                break;
+            case 10:
+                playSound(PIANO10, 1.0f);
+                break;
+            case 11:
+                playSound(PIANO11, 1.0f);
+                break;
+            case 12:
+                playSound(PIANO12, 1.0f);
+                break;
+        }
     }
 
     private void init() {
@@ -111,10 +179,20 @@ public class LockScreenService extends Service /*implements View.OnClickListener
 
 
                 //Log.i(TAG, "Keys entered" + keysEntered);
-                keysEntered.add(keyForPos(w, h, x, y));
+                int keycode = keyForPos(w, h, x, y);
+                keysEntered.add(keycode);
 
-                if (keysEntered.equals(passcode)) {
-                    verified = true;
+                if (sp.getBoolean("playNote", true)) {
+                    playSoundFromKeycode(keycode);
+                }
+
+                if (keysEntered.size() == passcode.size()) {
+
+                    if (keysEntered.equals(passcode)) {
+                        unlock();
+                    } else {
+                        keysEntered.clear();
+                    }
                 }
 
                 return false;
@@ -124,15 +202,7 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         buttonOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (verified) {
-                    windowManager.removeView(linearLayout);
-                    linearLayout = null;
-                    verified = false;
-                    keysEntered = null;
-                    passcode = null;
-                } else {
-                    keysEntered.clear();
-                }
+                unlock();
             }
         };
 
@@ -142,6 +212,14 @@ public class LockScreenService extends Service /*implements View.OnClickListener
 
         imageView.setBackgroundResource(R.drawable.ic_pianokeyboard);
         btnClose.setOnClickListener(buttonOnClickListener);
+    }
+
+    private void unlock() {
+        windowManager.removeView(linearLayout);
+        linearLayout = null;
+        verified = false;
+        keysEntered = null;
+        passcode = null;
     }
 
     private int keyForPos(float width, float height, float x, float y) {
@@ -205,6 +283,8 @@ public class LockScreenService extends Service /*implements View.OnClickListener
 
     @Override
     public void onDestroy() {
+        unlock();
+        Log.i(TAG, "LockScreenService.onDestroy");
         unregisterReceiver(screenReceiver);
         super.onDestroy();
     }

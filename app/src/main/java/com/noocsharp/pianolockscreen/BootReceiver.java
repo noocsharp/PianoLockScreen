@@ -1,4 +1,4 @@
-package com.thedroidboy.lockscreendemo;
+package com.noocsharp.pianolockscreen;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
