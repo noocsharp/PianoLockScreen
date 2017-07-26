@@ -35,8 +35,6 @@ public class LockScreenService extends Service /*implements View.OnClickListener
     //private RelativeLayout relativeLayout;
     private WindowManager.LayoutParams layoutParams;
     private WindowManager windowManager;
-    private View.OnTouchListener pianoOnTouchListener;
-    private View.OnClickListener buttonOnClickListener;
     private boolean verified = false;
     private ArrayList<Integer> keysEntered;
     private ArrayList<Integer> passcode;
@@ -168,7 +166,7 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         keysEntered = new ArrayList<>();
         passcode = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
 
-        pianoOnTouchListener = new View.OnTouchListener() {
+        View.OnTouchListener pianoOnTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 float x = motionEvent.getX();
@@ -199,19 +197,28 @@ public class LockScreenService extends Service /*implements View.OnClickListener
             }
         };
 
-        buttonOnClickListener = new View.OnClickListener() {
+        View.OnClickListener buttonOkOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 unlock();
             }
         };
+        View.OnClickListener buttonClearOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                keysEntered.clear();
+            }
+        };
 
-        View btnClose = linearLayout.findViewById(R.id.btn_ok);
+        View btnOk = linearLayout.findViewById(R.id.btn_ok);
+        View btnClear = linearLayout.findViewById(R.id.btn_clear);
         View imageView = linearLayout.findViewById(R.id.image_view);
         imageView.setOnTouchListener(pianoOnTouchListener);
 
         imageView.setBackgroundResource(R.drawable.ic_pianokeyboard);
-        btnClose.setOnClickListener(buttonOnClickListener);
+        btnOk.setOnClickListener(buttonOkOnClickListener);
+        btnClear.setOnClickListener(buttonClearOnClickListener);
+
     }
 
     private void unlock() {
@@ -283,7 +290,10 @@ public class LockScreenService extends Service /*implements View.OnClickListener
 
     @Override
     public void onDestroy() {
-        unlock();
+        if (soundPool != null) {
+            soundPool.release();
+        }
+        soundMap = null;
         Log.i(TAG, "LockScreenService.onDestroy");
         unregisterReceiver(screenReceiver);
         super.onDestroy();

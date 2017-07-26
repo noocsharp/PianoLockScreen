@@ -22,5 +22,11 @@ public class MainActivity extends Activity {
 
         Intent i = new Intent(this, PianoPreferencesActivity.class);
         startActivity(i);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (sp.getBoolean("enableLockScreen", false)) {
+            startService(new Intent(this, LockScreenService.class));
+        }
     }
 }

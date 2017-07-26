@@ -3,7 +3,7 @@
     <SwitchPreference android:title="Use Piano Lockscreen"
         android:defaultValue="false"
         android:summary="Enables the piano lockscreen"
-        android:key="enableLockscreen" />
+        android:key="enableLockScreen" />
     <SwitchPreference android:title="Play key sound"
         android:defaultValue="false"
         android:summary="Plays a note every time you press a key"
