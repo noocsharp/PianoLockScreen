@@ -57,7 +57,10 @@ public class LockScreenService extends Service /*implements View.OnClickListener
     private final int PIANO11 = 11;
     private final int PIANO12 = 12;
 
+    private boolean notePlayed = false;
+
     private static final String TAG = "LockScreenService";
+    View overlayView;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -176,25 +179,37 @@ public class LockScreenService extends Service /*implements View.OnClickListener
                 float h = view.getHeight();
 
 
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.i(TAG, "ACTION_DOWN");
+                    notePlayed = false;
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    Log.i(TAG, "ACTION_UP");
+                    hideOverlay();
+                }
                 //Log.i(TAG, "Keys entered" + keysEntered);
                 int keycode = keyForPos(w, h, x, y);
-                keysEntered.add(keycode);
+                if (!notePlayed) {
+                    keysEntered.add(keycode);
 
-                if (sp.getBoolean("playNote", true)) {
-                    playSoundFromKeycode(keycode);
-                }
-
-                if (keysEntered.size() == passcode.size()) {
-
-                    if (keysEntered.equals(passcode)) {
-                        unlock();
-                    } else {
-                        keysEntered.clear();
+                    if (sp.getBoolean("playNote", true)) {
+                        playSoundFromKeycode(keycode);
                     }
+                    drawOverlay(keycode);
+
+                    if (keysEntered.size() == passcode.size()) {
+
+                        if (keysEntered.equals(passcode)) {
+                            unlock();
+                        } else {
+                            keysEntered.clear();
+                        }
+                    }
+                    notePlayed = true;
                 }
 
-                return false;
+                return true;
             }
+
         };
 
         View.OnClickListener buttonOkOnClickListener = new View.OnClickListener() {
@@ -213,12 +228,60 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         View btnOk = linearLayout.findViewById(R.id.btn_ok);
         View btnClear = linearLayout.findViewById(R.id.btn_clear);
         View imageView = linearLayout.findViewById(R.id.image_view);
+        overlayView = linearLayout.findViewById(R.id.overlay_view);
+        hideOverlay();
         imageView.setOnTouchListener(pianoOnTouchListener);
 
         imageView.setBackgroundResource(R.drawable.ic_pianokeyboard);
         btnOk.setOnClickListener(buttonOkOnClickListener);
         btnClear.setOnClickListener(buttonClearOnClickListener);
 
+    }
+
+    private void hideOverlay() {
+        overlayView.setVisibility(View.INVISIBLE);
+    }
+
+    private void drawOverlay(int keycode) {
+        switch (keycode) {
+            case 1:
+                overlayView.setBackgroundResource(R.drawable.key1overlay);
+                break;
+            case 2:
+                overlayView.setBackgroundResource(R.drawable.key2overlay);
+                break;
+            case 3:
+                overlayView.setBackgroundResource(R.drawable.key3overlay);
+                break;
+            case 4:
+                overlayView.setBackgroundResource(R.drawable.key4overlay);
+                break;
+            case 5:
+                overlayView.setBackgroundResource(R.drawable.key5overlay);
+                break;
+            case 6:
+                overlayView.setBackgroundResource(R.drawable.key6overlay);
+                break;
+            case 7:
+                overlayView.setBackgroundResource(R.drawable.key7overlay);
+                break;
+            case 8:
+                overlayView.setBackgroundResource(R.drawable.key8overlay);
+                break;
+            case 9:
+                overlayView.setBackgroundResource(R.drawable.key9overlay);
+                break;
+            case 10:
+                overlayView.setBackgroundResource(R.drawable.key10overlay);
+                break;
+            case 11:
+                overlayView.setBackgroundResource(R.drawable.key11overlay);
+                break;
+            case 12:
+                overlayView.setBackgroundResource(R.drawable.key12overlay);
+                break;
+        }
+        overlayView.setVisibility(View.VISIBLE);
     }
 
     private void unlock() {

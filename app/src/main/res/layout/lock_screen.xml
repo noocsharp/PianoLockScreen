@@ -8,7 +8,7 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".4">
@@ -18,7 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
-    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/overlay_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </FrameLayout>
 
 
 
