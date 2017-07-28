@@ -22,7 +22,8 @@ import android.widget.Switch;
 public class PianoPreferencesActivity extends PreferenceActivity{
 
     private static final String TAG = "PianoPreferencesActivit";
-    private SharedPreferences sp;
+    //private SharedPreferences sp;
+    private TinyDB db;
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,8 @@ public class PianoPreferencesActivity extends PreferenceActivity{
         Log.i(TAG, "PianoPreferencesActivity.oncreate");
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PianoPreferenceFragment()).commit();
 
-        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        //sp = PreferenceManager.getDefaultSharedPreferences(this);
+        db = new TinyDB(getApplicationContext());
 
 
         listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -48,7 +50,8 @@ public class PianoPreferencesActivity extends PreferenceActivity{
             }
         };
 
-        sp.registerOnSharedPreferenceChangeListener(listener);
+        db.registerOnSharedPreferenceChangeListener(listener);
+        //sp.registerOnSharedPreferenceChangeListener(listener);
 
     }
 

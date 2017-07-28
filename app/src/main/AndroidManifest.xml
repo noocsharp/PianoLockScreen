@@ -20,6 +20,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".PianoPreferencesActivity" />
+        <activity android:name=".EditPasscode" >
+            <intent-filter>
+                <action android:name="com.noocsharp.pianolockscreen.EditPasscode"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
 
         <service android:name="com.noocsharp.pianolockscreen.LockScreenService"/>
 

@@ -60,6 +60,9 @@ public class LockScreenService extends Service /*implements View.OnClickListener
     private boolean notePlayed = false;
 
     private static final String TAG = "LockScreenService";
+
+    private TinyDB db;
+
     View overlayView;
 
     @Override
@@ -100,6 +103,8 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         soundMap.put(PIANO12, soundPool.load(this, R.raw.b4, 1));
 
         sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+        db = new TinyDB(getApplicationContext());
     }
 
     private void playSound(int sound, float fSpeed) {
@@ -167,11 +172,12 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         ((LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.lock_screen, linearLayout);
 
         keysEntered = new ArrayList<>();
-        passcode = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+        passcode = db.getListInt("passcode");
 
         View.OnTouchListener pianoOnTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                view.performClick();
                 float x = motionEvent.getX();
                 float y = motionEvent.getY();
 

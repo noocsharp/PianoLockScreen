@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference android:title="Use Piano Lockscreen"
+    <SwitchPreference
         android:defaultValue="false"
+        android:key="enableLockScreen"
         android:summary="Enables the piano lockscreen"
-        android:key="enableLockScreen" />
-    <SwitchPreference android:title="Play key sound"
+        android:title="Use Piano Lockscreen" />
+    <SwitchPreference
         android:defaultValue="false"
+        android:key="playNote"
         android:summary="Plays a note every time you press a key"
-        android:key="playNote" />
+        android:title="Play key sound" />
+    <Preference
+        android:summary="Change passcode"
+        android:title="Set passcode">
+        <intent android:action="com.noocsharp.pianolockscreen.EditPasscode" />
+
+    </Preference>
 </PreferenceScreen>
