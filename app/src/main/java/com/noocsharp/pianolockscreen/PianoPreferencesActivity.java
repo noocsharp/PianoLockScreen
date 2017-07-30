@@ -3,6 +3,7 @@ package com.noocsharp.pianolockscreen;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -11,7 +12,9 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.widget.Switch;
 
 
@@ -29,6 +32,14 @@ public class PianoPreferencesActivity extends PreferenceActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "PianoPreferencesActivity.oncreate");
+        /*
+        setContentView(R.layout.preferences_screen);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.preferences_toolbar);
+        toolbar.setTitle(R.string.edit_passcode_toolbar_title);
+        toolbar.setTitleTextColor(Color.WHITE);
+        */
+
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PianoPreferenceFragment()).commit();
 
         //sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -41,7 +52,7 @@ public class PianoPreferencesActivity extends PreferenceActivity{
                 Log.i(TAG, String.format("Preference changed: %s", s));
                 if (s.equals("enableLockScreen")) {
                     Log.i(TAG, "enableLockScreen changed");
-                    if (sharedPreferences.getBoolean(s, false)) {
+                    if (db.getBoolean(s)) {
                         startService(new Intent(PianoPreferencesActivity.this, LockScreenService.class));
                     } else {
                         stopService(new Intent(PianoPreferencesActivity.this, LockScreenService.class));
@@ -52,7 +63,15 @@ public class PianoPreferencesActivity extends PreferenceActivity{
 
         db.registerOnSharedPreferenceChangeListener(listener);
         //sp.registerOnSharedPreferenceChangeListener(listener);
+        TypedValue tv = new TypedValue();
 
+
+        /*
+        int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+        int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+        int topMargin = toolbar.getHeight();
+        getListView().setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
+        */
     }
 
     public static class PianoPreferenceFragment extends PreferenceFragment

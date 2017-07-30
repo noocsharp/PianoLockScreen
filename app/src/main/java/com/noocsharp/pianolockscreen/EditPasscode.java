@@ -2,8 +2,10 @@ package com.noocsharp.pianolockscreen;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +32,8 @@ public class EditPasscode extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_passcode);
+
+
         newPasscode = new ArrayList<>();
         confirmPasscode = new ArrayList<>();
         init();
@@ -53,7 +57,12 @@ public class EditPasscode extends Activity {
                     if (newPasscode.equals(confirmPasscode)) {
                         db.putListInt("passcode", confirmPasscode);
 
-                        startActivity(new Intent(EditPasscode.this, PianoPreferencesActivity.class));
+                        /*
+                        Intent openPreferences = new Intent(EditPasscode.this, PianoPreferencesActivity.class);
+                        openPreferences.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        startActivityIfNeeded(openPreferences, 0);
+                        */
+                        finish();
                     } else {
                         newPasscode.clear();
                         confirmPasscode.clear();
