@@ -8,10 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-/**
- * Created by Yaakov Shahak on 14/12/2016.
- */
-
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
 
@@ -23,9 +19,9 @@ public class MainActivity extends Activity {
         Intent i = new Intent(this, PianoPreferencesActivity.class);
         startActivity(i);
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        TinyDB db = new TinyDB(getApplicationContext());
 
-        if (sp.getBoolean("enableLockScreen", false)) {
+        if (db.getBoolean("enableLockScreen")) {
             startService(new Intent(this, LockScreenService.class));
         }
     }

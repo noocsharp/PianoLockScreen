@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Lock Screen Demo</string>
-    <string name="edit_passcode_toolbar_title">Edit passcode</string>
     <string name="button_ok">ok</string>
     <string name="button_clear">clear</string>
+    <string name="edit_passcode_instruction_text">Enter new passcode</string>
+    <string name="edit_passcode_confirm_text">Enter new passcode again to confirm</string>
 </resources>

@@ -10,8 +10,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnTouch;
 
 /**
  * Created by nihal on 7/27/2017.
@@ -21,9 +27,14 @@ public class EditPasscode extends Activity {
     ArrayList<Integer> newPasscode;
     ArrayList<Integer> confirmPasscode;
 
-    boolean notePlayed = false;
-    ImageView overlayView;
+    @BindView(R.id.edit_pascode_btn_ok) Button btnOk;
+    @BindView(R.id.edit_passcode_btn_clear) Button btnClear;
 
+    @BindView(R.id.edit_passcode_overlay_view) ImageView overlayView;
+
+    @BindView(R.id.edit_passcode_instruction) TextView tv;
+
+    boolean notePlayed = false;
     boolean confirmPass = false;
 
     TinyDB db;
@@ -32,7 +43,7 @@ public class EditPasscode extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_passcode);
-
+        ButterKnife.bind(this);
 
         newPasscode = new ArrayList<>();
         confirmPasscode = new ArrayList<>();
@@ -41,84 +52,76 @@ public class EditPasscode extends Activity {
         db = new TinyDB(getApplicationContext());
     }
 
-    private void init() {
-
-        overlayView = (ImageView) findViewById(R.id.edit_passcode_overlay_view);
-
-        Button btnOk = (Button) findViewById(R.id.edit_pascode_btn_ok);
-        Button btnClear = (Button) findViewById(R.id.edit_passcode_btn_clear);
-
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!confirmPass) {
-                    confirmPass = true;
-                } else {
-                    if (newPasscode.equals(confirmPasscode)) {
-                        db.putListInt("passcode", confirmPasscode);
+    @OnClick(R.id.edit_pascode_btn_ok)
+    public void btnOkOnClick() {
+        if (!confirmPass) {
+            confirmPass = true;
+            tv.setText(R.string.edit_passcode_confirm_text);
+        } else {
+            if (newPasscode.equals(confirmPasscode)) {
+                db.putListInt("passcode", confirmPasscode);
 
                         /*
                         Intent openPreferences = new Intent(EditPasscode.this, PianoPreferencesActivity.class);
                         openPreferences.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         startActivityIfNeeded(openPreferences, 0);
                         */
-                        finish();
-                    } else {
-                        newPasscode.clear();
-                        confirmPasscode.clear();
-                        confirmPass = false;
-                    }
-                }
-
-            }
-        });
-
-        btnClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                finish();
+            } else {
                 newPasscode.clear();
+                confirmPasscode.clear();
+                confirmPass = false;
             }
-        });
+        }
+    }
 
-        View.OnTouchListener pianoOnTouchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                view.performClick();
-                float x = motionEvent.getX();
-                float y = motionEvent.getY();
+    @OnClick(R.id.edit_passcode_btn_clear)
+    public void btnClearOnClick() {
+        newPasscode.clear();
 
-                float w = view.getWidth();
-                float h = view.getHeight();
+    }
+
+    @OnTouch(R.id.edit_passcode_imageview)
+    public boolean pianoOnTouch(ImageView view, MotionEvent motionEvent) {
+        view.performClick();
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+
+        float w = view.getWidth();
+        float h = view.getHeight();
 
 
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    notePlayed = false;
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    hideOverlay();
-                }
-                //Log.i(TAG, "Keys entered" + keysEntered);
-                int keycode = keyForPos(w, h, x, y);
-                if (!notePlayed) {
-                    if (!confirmPass) {
-                        newPasscode.add(keycode);
-                    } else {
-                        confirmPasscode.add(keycode);
-                    }
-
-                    drawOverlay(keycode);
-
-                    notePlayed = true;
-                }
-
-                return true;
+        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            notePlayed = false;
+        } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            hideOverlay();
+        }
+        //Log.i(TAG, "Keys entered" + keysEntered);
+        int keycode = keyForPos(w, h, x, y);
+        if (!notePlayed) {
+            if (!confirmPass) {
+                newPasscode.add(keycode);
+            } else {
+                confirmPasscode.add(keycode);
             }
 
-        };
+            drawOverlay(keycode);
+
+            notePlayed = true;
+        }
+
+        return true;
+    }
+
+    private void init() {
+
+        tv.setText(R.string.edit_passcode_instruction_text);
+
 
         View imageview = findViewById(R.id.edit_passcode_imageview);
-        imageview.setOnTouchListener(pianoOnTouchListener);
         imageview.setBackgroundResource(R.drawable.ic_pianokeyboard);
     }
+
     private void hideOverlay() {
         overlayView.setVisibility(View.INVISIBLE);
     }
