@@ -6,13 +6,17 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +28,8 @@ import butterknife.OnTouch;
  */
 
 public class EditPasscode extends Activity {
+
+    private static final String TAG = "EditPasscode";
     ArrayList<Integer> newPasscode;
     ArrayList<Integer> confirmPasscode;
 
@@ -36,6 +42,10 @@ public class EditPasscode extends Activity {
 
     boolean notePlayed = false;
     boolean confirmPass = false;
+    boolean currentPasscodeEntered = false;
+
+    ArrayList<Integer> currentPasscode;
+    ArrayList<Integer> enteredCurrentPasscode;
 
     TinyDB db;
 
@@ -50,35 +60,49 @@ public class EditPasscode extends Activity {
         init();
 
         db = new TinyDB(getApplicationContext());
+
+        currentPasscode = db.getListInt("passcode");
+        enteredCurrentPasscode = new ArrayList<>();
     }
 
     @OnClick(R.id.edit_pascode_btn_ok)
     public void btnOkOnClick() {
-        if (!confirmPass) {
-            confirmPass = true;
-            tv.setText(R.string.edit_passcode_confirm_text);
+        if (!currentPasscodeEntered) {
+            if (currentPasscode.equals(enteredCurrentPasscode)) {
+                Log.i(TAG, "currentPAsscode = enteredCurrentPasscode");
+                currentPasscodeEntered = true;
+                tv.setText(R.string.edit_passcode_instruction_text);
+            }
         } else {
-            if (newPasscode.equals(confirmPasscode)) {
-                db.putListInt("passcode", confirmPasscode);
-
-                        /*
-                        Intent openPreferences = new Intent(EditPasscode.this, PianoPreferencesActivity.class);
-                        openPreferences.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivityIfNeeded(openPreferences, 0);
-                        */
-                finish();
+            if (!confirmPass) {
+                confirmPass = true;
+                tv.setText(R.string.edit_passcode_confirm_text);
+                btnOk.setText(R.string.button_done);
             } else {
-                newPasscode.clear();
-                confirmPasscode.clear();
-                confirmPass = false;
+                if (newPasscode.equals(confirmPasscode)) {
+                    db.putListInt("passcode", confirmPasscode);
+
+                    finish();
+                } else {
+                    newPasscode.clear();
+                    confirmPasscode.clear();
+
+                    confirmPass = false;
+
+                    tv.setText(R.string.edit_passcode_nomatch_text);
+                    btnOk.setText(R.string.button_continue);
+                }
             }
         }
     }
 
     @OnClick(R.id.edit_passcode_btn_clear)
     public void btnClearOnClick() {
-        newPasscode.clear();
-
+        if (!currentPasscodeEntered) {
+            enteredCurrentPasscode.clear();
+        } else {
+            newPasscode.clear();
+        }
     }
 
     @OnTouch(R.id.edit_passcode_imageview)
@@ -99,10 +123,15 @@ public class EditPasscode extends Activity {
         //Log.i(TAG, "Keys entered" + keysEntered);
         int keycode = keyForPos(w, h, x, y);
         if (!notePlayed) {
-            if (!confirmPass) {
-                newPasscode.add(keycode);
+            if (!currentPasscodeEntered) {
+                enteredCurrentPasscode.add(keycode);
+                Log.i(TAG, enteredCurrentPasscode.toString());
             } else {
-                confirmPasscode.add(keycode);
+                if (!confirmPass) {
+                    newPasscode.add(keycode);
+                } else {
+                    confirmPasscode.add(keycode);
+                }
             }
 
             drawOverlay(keycode);
@@ -115,7 +144,7 @@ public class EditPasscode extends Activity {
 
     private void init() {
 
-        tv.setText(R.string.edit_passcode_instruction_text);
+        tv.setText(R.string.edit_passcode_current_passcode);
 
 
         View imageview = findViewById(R.id.edit_passcode_imageview);

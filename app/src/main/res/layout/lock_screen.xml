@@ -17,18 +17,20 @@
             android:id="@+id/image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@null"
             />
 
         <ImageView
             android:id="@+id/overlay_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@null"
             />
     </FrameLayout>
 
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".6">
@@ -37,16 +39,19 @@
             android:id="@+id/btn_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ok"
-            android:layout_gravity="center"/>
+            android:text="@string/button_ok"
+            android:layout_gravity="center"
+            android:layout_alignParentEnd="true"/>
 
         <Button
             android:id="@+id/btn_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="clear"
-            android:layout_gravity="center"/>
-    </LinearLayout>
+            android:text="@string/button_clear"
+            android:layout_gravity="center"
+            android:layout_alignParentStart="true"/>
+
+    </RelativeLayout>
 
 
 </LinearLayout>

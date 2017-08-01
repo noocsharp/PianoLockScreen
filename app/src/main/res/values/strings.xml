@@ -2,6 +2,10 @@
     <string name="app_name">Lock Screen Demo</string>
     <string name="button_ok">ok</string>
     <string name="button_clear">clear</string>
-    <string name="edit_passcode_instruction_text">Enter new passcode</string>
-    <string name="edit_passcode_confirm_text">Enter new passcode again to confirm</string>
+    <string name="edit_passcode_instruction_text">Enter new passcode.</string>
+    <string name="edit_passcode_confirm_text">Enter new passcode again to confirm.</string>
+    <string name="edit_passcode_nomatch_text">The passcodes do not match, please restart.</string>
+    <string name="edit_passcode_current_passcode">Please enter your current passcode.</string>
+    <string name="button_continue">continue</string>
+    <string name="button_done">done</string>
 </resources>
