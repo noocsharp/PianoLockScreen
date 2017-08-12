@@ -1,17 +1,27 @@
 package com.noocsharp.pianolockscreen;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -42,7 +52,6 @@ public class LockScreenService extends Service /*implements View.OnClickListener
     private SoundPool soundPool;
     private HashMap<Integer, Integer> soundMap;
 
-    private SharedPreferences sp;
 
     private final int PIANO1  = 1;
     private final int PIANO2  = 2;
@@ -101,8 +110,6 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         soundMap.put(PIANO10, soundPool.load(this, R.raw.a4, 1));
         soundMap.put(PIANO11, soundPool.load(this, R.raw.bb4, 1));
         soundMap.put(PIANO12, soundPool.load(this, R.raw.b4, 1));
-
-        sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         db = new TinyDB(getApplicationContext());
     }
@@ -197,7 +204,7 @@ public class LockScreenService extends Service /*implements View.OnClickListener
                 if (!notePlayed) {
                     keysEntered.add(keycode);
 
-                    if (sp.getBoolean("playNote", true)) {
+                    if (db.getBoolean("playNote")) {
                         playSoundFromKeycode(keycode);
                     }
                     drawOverlay(keycode);
@@ -221,10 +228,12 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         View.OnClickListener buttonOkOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, passcode.toString());
                 unlock();
             }
         };
         View.OnClickListener buttonClearOnClickListener = new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 keysEntered.clear();
@@ -235,6 +244,7 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         View btnClear = linearLayout.findViewById(R.id.btn_clear);
         View imageView = linearLayout.findViewById(R.id.image_view);
         overlayView = linearLayout.findViewById(R.id.overlay_view);
+
         hideOverlay();
         imageView.setOnTouchListener(pianoOnTouchListener);
 
@@ -242,6 +252,19 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         btnOk.setOnClickListener(buttonOkOnClickListener);
         btnClear.setOnClickListener(buttonClearOnClickListener);
 
+        View wallpaperView = linearLayout.findViewById(R.id.wallpaper);
+        Bitmap wallpaper = null;
+        try {
+
+            wallpaper = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(db.getString("wallpaper_uri")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (wallpaper != null) {
+            Bitmap b = Bitmap.createScaledBitmap(wallpaper, 1080, 1920, false);
+            wallpaperView.setBackground(new BitmapDrawable(b));
+        }
     }
 
     private void hideOverlay() {
@@ -374,11 +397,13 @@ public class LockScreenService extends Service /*implements View.OnClickListener
            /*if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && linearLayout == null) {
                 init();
             }*/
-            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && linearLayout == null) {
-                init();
-            }
+
+        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && linearLayout == null) {
+            init();
+        }
         }
     };
+
 
 
 }

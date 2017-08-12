@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 
     <application
@@ -22,12 +23,13 @@
         <activity android:name=".PianoPreferencesActivity" />
         <activity android:name=".EditPasscode" >
             <intent-filter>
-                <action android:name="com.noocsharp.pianolockscreen.EditPasscode"/>
+                <action android:name="android.intent.action.GET_CONTENT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
-        <service android:name="com.noocsharp.pianolockscreen.LockScreenService"/>
+        <service android:name="com.noocsharp.pianolockscreen.LockScreenService">
+        </service>
 
         <receiver android:name="com.noocsharp.pianolockscreen.BootReceiver">
             <intent-filter>
