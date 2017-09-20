@@ -24,6 +24,7 @@
         <activity android:name=".EditPasscode" >
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT"/>
+                <action android:name="com.noocsharp.pianolockscreen.EditPasscode"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
