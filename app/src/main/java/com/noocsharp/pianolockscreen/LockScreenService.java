@@ -2,6 +2,7 @@ package com.noocsharp.pianolockscreen;
 
 import android.Manifest;
 import android.app.Service;
+import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -255,15 +256,14 @@ public class LockScreenService extends Service /*implements View.OnClickListener
         View wallpaperView = linearLayout.findViewById(R.id.wallpaper);
         Bitmap wallpaper = null;
         try {
+            WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+            Drawable wallpaperDrawable = wallpaperManager.getDrawable();
 
-            wallpaper = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(db.getString("wallpaper_uri")));
+            if (wallpaperDrawable != null) {
+                wallpaperView.setBackground(wallpaperDrawable);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        if (wallpaper != null) {
-            Bitmap b = Bitmap.createScaledBitmap(wallpaper, 1080, 1920, false);
-            wallpaperView.setBackground(new BitmapDrawable(b));
         }
     }
 
